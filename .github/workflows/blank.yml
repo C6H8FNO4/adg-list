@@ -1,6 +1,6 @@
 name: Extract AdGuard Rules
 
-于:
+on:
   workflow_dispatch:
 
 jobs:
