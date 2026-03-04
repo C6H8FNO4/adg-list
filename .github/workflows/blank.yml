@@ -10,12 +10,13 @@ jobs:
       contents: write
 
     steps:
+      # 1️⃣ Checkout 仓库
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # 1️⃣ 生成 v1.0.X 版本号
+      # 2️⃣ 自动生成 v1.0.X 版本号
       - name: Generate Version
         run: |
           git fetch --tags
@@ -33,7 +34,7 @@ jobs:
           echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
           echo "Generated version: $NEW_VERSION"
 
-      # 2️⃣ 仓库信息
+      # 3️⃣ 仓库信息
       - name: Prepare Variables
         run: |
           REPO_NAME="${GITHUB_REPOSITORY##*/}"
@@ -44,12 +45,12 @@ jobs:
           echo "REPO_URL=$REPO_URL" >> $GITHUB_ENV
           echo "TIMESTAMP=$TIMESTAMP" >> $GITHUB_ENV
 
-      # 3️⃣ 下载 YAML
+      # 4️⃣ 下载默认 YAML
       - name: Download YAML
         run: |
           curl -L "https://raw.githubusercontent.com/C6H8FNO4/Adguard-Home-For-Magisk-Mod/main/Adguardhome/bin/AdGuardHome.yaml" -o source.yaml
 
-      # 4️⃣ 提取 user_rules（去除 YAML 标记）
+      # 5️⃣ 提取 user_rules（去掉 YAML 标记）
       - name: Extract Rules
         run: |
           awk '
@@ -62,7 +63,7 @@ jobs:
           }
           ' source.yaml > extracted_rules.txt
 
-      # 5️⃣ 生成最终 rules.txt
+      # 6️⃣ 生成最终 rules.txt
       - name: Generate Final File
         run: |
           cat > rules.txt << EOF
@@ -78,7 +79,7 @@ jobs:
 EOF
           cat extracted_rules.txt >> rules.txt
 
-      # 6️⃣ 创建并推送 Tag
+      # 7️⃣ 创建并推送 tag
       - name: Create Tag
         run: |
           git config user.name "github-actions"
@@ -86,7 +87,7 @@ EOF
           git tag $VERSION
           git push origin $VERSION
 
-      # 7️⃣ 上传 rules.txt
+      # 8️⃣ 上传 rules.txt
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
