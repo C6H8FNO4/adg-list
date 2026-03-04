@@ -14,7 +14,7 @@ on:
         required: false
 
   schedule:
-    - cron: '* * * * *'    # 每分钟运行一次构建
+    - cron: '0 * * * *'    # 每小时运行一次构建
     - cron: '0 0 * * *'    # 每天 UTC 0:00 创建 Release
 
 permissions:
@@ -39,13 +39,15 @@ jobs:
       - name: Run build script
         id: build_step
         run: |
+          # 输出到仓库根目录
           python scripts/build.py \
             "${{ github.event.inputs.yaml_url }}" \
             "${{ github.event.inputs.version }}" \
-            "${{ github.event.inputs.description }}"
+            "${{ github.event.inputs.description }}" \
+            > rules.txt
 
       - name: Commit updated rules.txt
-        if: github.event_name == 'schedule' && github.event.schedule != '0 0 * * *'  # 每分钟更新，不创建 Release
+        if: github.event_name == 'schedule' && github.event.schedule != '0 0 * * *'  # 每小时更新，不创建 Release
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@users.noreply.github.com"
@@ -54,7 +56,7 @@ jobs:
           git push
 
       - name: Create daily Release
-        if: github.event_name == 'schedule' && github.event.schedule == '0 0 * * *'  # 仅每天 UTC 0:00
+        if: github.event_name == 'schedule' && github.event.schedule == '0 0 * * *'  # 每天 UTC 0:00
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.build_step.outputs.version }}
