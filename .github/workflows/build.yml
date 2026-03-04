@@ -1,0 +1,47 @@
+name: Build AdGuard Rules
+
+on:
+  workflow_dispatch:
+    inputs:
+      yaml_url:
+        description: 'AdGuardHome.yaml URL (optional)'
+        required: false
+      version:
+        description: 'Version (x.y.z), leave empty to auto increment'
+        required: false
+      description:
+        description: 'Custom description (optional)'
+        required: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install pyyaml requests
+
+      - name: Run build script
+        id: build_step
+        run: |
+          python scripts/build.py \
+            "${{ github.event.inputs.yaml_url }}" \
+            "${{ github.event.inputs.version }}" \
+            "${{ github.event.inputs.description }}"
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.build_step.outputs.version }}
+          name: v${{ steps.build_step.outputs.version }}
+          files: rules.txt
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
