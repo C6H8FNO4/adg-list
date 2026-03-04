@@ -51,11 +51,9 @@ else:
 now = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
 
 if input_description:
-    description = input_description
+    description = input_description.strip()
 else:
-    description = f"""Generated automatically.
-Version: {version}
-Time: {now}"""
+    description = f"Generated automatically. Version: {version} Time: {now}"
 
 repo_name = os.environ["GITHUB_REPOSITORY"].split("/")[-1]
 repo_url = f"https://github.com/{os.environ['GITHUB_REPOSITORY']}"
