@@ -47,30 +47,24 @@ jobs:
       - name: Checkout current repository
         uses: actions/checkout@v4
 
-      - name: Install yq (YAML processor)
-        run: sudo snap install yq
-
-      # 确保 jq 已安装（通常预装，但显式安装更稳妥）
-      - name: Ensure jq is installed
+      # 确保 curl 和 jq 已安装（即便预装，显式安装更可靠）
+      - name: Install curl and jq
         run: |
           sudo apt-get update
-          sudo apt-get install -y jq
+          sudo apt-get install -y curl jq
 
-      # 使用 GitHub CLI 下载文件（无需 curl/wget）
-      - name: Download YAML file using GitHub CLI
+      - name: Install yq
+        run: sudo snap install yq
+
+      # 直接从 raw.githubusercontent.com 下载文件（无需令牌）
+      - name: Download YAML file using curl
         id: download
-        env:
-          GH_TOKEN: ${{ secrets.PAT || github.token }}
         run: |
           REPO="${{ github.event.inputs.source_repo }}"
           FILE_PATH="${{ github.event.inputs.file_path }}"
           BRANCH="${{ github.event.inputs.branch }}"
-          
-          # 直接获取文件的原始内容（使用 Raw 媒体类型）
-          gh api -H "Accept: application/vnd.github.raw" \
-            "/repos/$REPO/contents/$FILE_PATH?ref=$BRANCH" \
-            > downloaded_file.yaml
-          
+          RAW_URL="https://raw.githubusercontent.com/${REPO}/${BRANCH}/${FILE_PATH}"
+          curl -L -o downloaded_file.yaml "$RAW_URL"
           echo "file=downloaded_file.yaml" >> $GITHUB_OUTPUT
 
       - name: Extract user_rules using yq
