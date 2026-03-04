@@ -1,0 +1,42 @@
+name: Hourly Build AdGuard Rules
+
+on:
+  schedule:
+    # 每小时整点运行（UTC时间），可根据需要调整 cron 表达式
+    - cron: '0 * * * *'
+  # 同时保留手动触发能力，方便测试
+  workflow_dispatch:
+
+permissions:
+  contents: write   # 允许推送代码到仓库
+
+jobs:
+  build-and-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # 获取所有标签，如果脚本需要版本信息
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install pyyaml requests
+
+      - name: Run build script
+        run: |
+          # 执行构建脚本，生成 rules.txt
+          # 传入三个空字符串参数，适配原有脚本签名
+          python scripts/build.py "" "" ""
+
+      - name: Commit and push rules.txt
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: auto-update rules.txt [skip ci]"
+          file_pattern: rules.txt
+          commit_user_name: github-actions[bot]
+          commit_user_email: github-actions[bot]@users.noreply.github.com
