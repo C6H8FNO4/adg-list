@@ -40,6 +40,10 @@ on:
         required: false
         default: 'https://github.com/liuzq2002/Adguard-Home-For-Magisk-Mod'
 
+# 显式授予写入权限（关键修复！）
+permissions:
+  contents: write
+
 jobs:
   extract-and-release:
     runs-on: ubuntu-latest
@@ -47,7 +51,7 @@ jobs:
       - name: Checkout current repository
         uses: actions/checkout@v4
 
-      # 确保 curl 和 jq 已安装（即便预装，显式安装更可靠）
+      # 确保 curl 和 jq 已安装
       - name: Install curl and jq
         run: |
           sudo apt-get update
@@ -111,35 +115,32 @@ jobs:
           echo "tag=$TAG" >> $GITHUB_OUTPUT
           echo "release_name=Extracted user_rules on $(date)" >> $GITHUB_OUTPUT
 
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
+      # 使用 GitHub CLI 创建 Release（自动处理权限）
+      - name: Create Release using GitHub CLI
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ steps.tag.outputs.tag }}
-          release_name: ${{ steps.tag.outputs.release_name }}
-          body: |
-            **Extracted user_rules from** `${{ github.event.inputs.source_repo }}` **at** `${{ github.event.inputs.file_path }}`
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # 构建 Release 描述（多行）
+          BODY="**Extracted user_rules from** \`${{ github.event.inputs.source_repo }}\` **at** \`${{ github.event.inputs.file_path }}\`\n\n"
+          BODY+="**Header Info:**\n"
+          BODY+="- Title: ${{ github.event.inputs.title }}\n"
+          BODY+="- Description: ${{ github.event.inputs.description }}\n"
+          BODY+="- Version: ${{ github.event.inputs.version }}\n"
+          BODY+="- Homepage: ${{ github.event.inputs.homepage }}\n"
+          BODY+="- Last modified: ${{ env.LAST_MODIFIED }}\n"
+          BODY+="- Compiled by: @${{ github.actor }}\n\n"
 
-            **Header Info:**
-            - Title: ${{ github.event.inputs.title }}
-            - Description: ${{ github.event.inputs.description }}
-            - Version: ${{ github.event.inputs.version }}
-            - Homepage: ${{ github.event.inputs.homepage }}
-            - Last modified: ${{ env.LAST_MODIFIED }}
-            - Compiled by: @${{ github.actor }}
+          if [[ "${{ github.event.inputs.include_full_content }}" == "yes" ]]; then
+            BODY+="\`\`\`\n${{ env.FULL_CONTENT }}\n\`\`\`"
+          else
+            BODY+="Full content attached as file with header."
+          fi
 
-            ${{ github.event.inputs.include_full_content == 'yes' && format('```\n{0}\n```', env.FULL_CONTENT) || 'Full content attached as file with header.' }}
-          draft: false
-          prerelease: false
+          # 将描述写入临时文件（处理换行）
+          echo -e "$BODY" > release_body.md
 
-      - name: Upload final file as asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./${{ steps.generate_file.outputs.file }}
-          asset_name: user_rules_${{ steps.tag.outputs.tag }}.txt
-          asset_content_type: text/plain
+          # 创建 Release 并上传附件（一步完成）
+          gh release create "${{ steps.tag.outputs.tag }}" \
+            --title "${{ steps.tag.outputs.release_name }}" \
+            --notes-file release_body.md \
+            "./${{ steps.generate_file.outputs.file }}#user_rules_${{ steps.tag.outputs.tag }}.txt"
