@@ -13,6 +13,10 @@ on:
         description: 'Custom description (optional)'
         required: false
 
+  schedule:
+    - cron: '* * * * *'    # 每分钟运行一次构建
+    - cron: '0 0 * * *'    # 每天 UTC 0:00 创建 Release
+
 permissions:
   contents: write
 
@@ -40,7 +44,17 @@ jobs:
             "${{ github.event.inputs.version }}" \
             "${{ github.event.inputs.description }}"
 
-      - name: Create Release
+      - name: Commit updated rules.txt
+        if: github.event_name == 'schedule' && github.event.schedule != '0 0 * * *'  # 每分钟更新，不创建 Release
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add rules.txt
+          git commit -m "Update rules.txt [auto commit]"
+          git push
+
+      - name: Create daily Release
+        if: github.event_name == 'schedule' && github.event.schedule == '0 0 * * *'  # 仅每天 UTC 0:00
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.build_step.outputs.version }}
