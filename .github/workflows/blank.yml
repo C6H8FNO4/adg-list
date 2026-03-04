@@ -1,0 +1,151 @@
+name: Extract user_rules with header and Create Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_repo:
+        description: '目标仓库 (格式: owner/repo)'
+        required: true
+        default: 'liuzq2002/Adguard-Home-For-Magisk-Mod'
+      file_path:
+        description: 'YAML 文件路径 (相对于仓库根目录)'
+        required: true
+        default: 'Adguardhome/bin/AdGuardHome.yaml'
+      branch:
+        description: '分支名'
+        required: true
+        default: 'main'
+      tag_prefix:
+        description: 'Release 标签前缀'
+        required: false
+        default: 'rules-'
+      include_full_content:
+        description: '是否在 Release 描述中包含完整内容 (yes/no)'
+        required: false
+        default: 'no'
+      title:
+        description: '规则列表标题 (Title)'
+        required: false
+        default: 'Extracted AdGuard Rules'
+      description:
+        description: '规则列表描述 (Description)'
+        required: false
+        default: 'User rules extracted from AdGuardHome.yaml'
+      version:
+        description: '规则版本 (Version)'
+        required: false
+        default: '1.0.0.0'
+      homepage:
+        description: '主页地址 (Homepage)'
+        required: false
+        default: 'https://github.com/liuzq2002/Adguard-Home-For-Magisk-Mod'
+
+jobs:
+  extract-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current repository
+        uses: actions/checkout@v4
+
+      - name: Install yq (YAML processor)
+        run: sudo snap install yq
+
+      # 确保 jq 已安装（通常预装，但显式安装更稳妥）
+      - name: Ensure jq is installed
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+
+      # 使用 GitHub CLI 下载文件（无需 curl/wget）
+      - name: Download YAML file using GitHub CLI
+        id: download
+        env:
+          GH_TOKEN: ${{ secrets.PAT || github.token }}
+        run: |
+          REPO="${{ github.event.inputs.source_repo }}"
+          FILE_PATH="${{ github.event.inputs.file_path }}"
+          BRANCH="${{ github.event.inputs.branch }}"
+          
+          # 直接获取文件的原始内容（使用 Raw 媒体类型）
+          gh api -H "Accept: application/vnd.github.raw" \
+            "/repos/$REPO/contents/$FILE_PATH?ref=$BRANCH" \
+            > downloaded_file.yaml
+          
+          echo "file=downloaded_file.yaml" >> $GITHUB_OUTPUT
+
+      - name: Extract user_rules using yq
+        id: extract
+        run: |
+          yq eval '.user_rules' downloaded_file.yaml > user_rules_content.txt
+          {
+            echo 'RULES_RAW<<EOF'
+            cat user_rules_content.txt
+            echo EOF
+          } >> $GITHUB_ENV
+
+      - name: Generate file with header
+        id: generate_file
+        run: |
+          LAST_MODIFIED=$(date -u +'%Y-%m-%dT%H:%M:%S.000Z')
+          COMPILED_BY="${{ github.actor }}"
+          
+          OUTPUT_FILE="user_rules_with_header.txt"
+          {
+            echo "! Title: ${{ github.event.inputs.title }}"
+            echo "! Description: ${{ github.event.inputs.description }}"
+            echo "! Version: ${{ github.event.inputs.version }}"
+            echo "! Homepage: ${{ github.event.inputs.homepage }}"
+            echo "! Last modified: $LAST_MODIFIED"
+            echo "!"
+            echo "! Compiled by @$COMPILED_BY"
+            echo "!"
+            cat user_rules_content.txt
+          } > "$OUTPUT_FILE"
+          
+          echo "file=$OUTPUT_FILE" >> $GITHUB_OUTPUT
+          {
+            echo 'FULL_CONTENT<<EOF'
+            cat "$OUTPUT_FILE"
+            echo EOF
+          } >> $GITHUB_ENV
+
+      - name: Generate tag and release name
+        id: tag
+        run: |
+          TIMESTAMP=$(date +'%Y%m%d%H%M%S')
+          TAG="${{ github.event.inputs.tag_prefix }}$TIMESTAMP"
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          echo "release_name=Extracted user_rules on $(date)" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          release_name: ${{ steps.tag.outputs.release_name }}
+          body: |
+            **Extracted user_rules from** `${{ github.event.inputs.source_repo }}` **at** `${{ github.event.inputs.file_path }}`
+
+            **Header Info:**
+            - Title: ${{ github.event.inputs.title }}
+            - Description: ${{ github.event.inputs.description }}
+            - Version: ${{ github.event.inputs.version }}
+            - Homepage: ${{ github.event.inputs.homepage }}
+            - Last modified: ${{ env.LAST_MODIFIED }}
+            - Compiled by: @${{ github.actor }}
+
+            ${{ github.event.inputs.include_full_content == 'yes' && format('```\n{0}\n```', env.FULL_CONTENT) || 'Full content attached as file with header.' }}
+          draft: false
+          prerelease: false
+
+      - name: Upload final file as asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./${{ steps.generate_file.outputs.file }}
+          asset_name: user_rules_${{ steps.tag.outputs.tag }}.txt
+          asset_content_type: text/plain
