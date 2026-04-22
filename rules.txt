@@ -1,9 +1,9 @@
 !
 ! Title: Custom AdGuard DNS filter
-! Description: Generated automatically. Version: 0.0.3 Time: 2026-04-22T15:17:56Z
+! Description: Generated automatically. Version: 0.0.3 Time: 2026-04-22T17:07:18Z
 ! Version: 0.0.3
 ! Homepage: https://github.com/C6H8FNO4/adg-list
-! Last modified: 2026-04-22T15:17:56Z
+! Last modified: 2026-04-22T17:07:18Z
 !
 ! Compiled by @adg-list v0.0.3
 !
