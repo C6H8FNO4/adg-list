@@ -1,9 +1,9 @@
 !
 ! Title: Custom AdGuard DNS filter
-! Description: Generated automatically. Version: 0.0.3 Time: 2026-06-17T00:20:38Z
+! Description: Generated automatically. Version: 0.0.3 Time: 2026-06-17T06:17:53Z
 ! Version: 0.0.3
 ! Homepage: https://github.com/C6H8FNO4/adg-list
-! Last modified: 2026-06-17T00:20:38Z
+! Last modified: 2026-06-17T06:17:53Z
 !
 ! Compiled by @adg-list v0.0.3
 !
@@ -94,7 +94,6 @@
 ||zzhc.vnet.cn^$important
 ||sentry.io^$importantnt
 ||api.umengcn.org^$important
-||developer.xiaomi.com^$important
 @@||iyfbodn.com^$important
 ||update.googleapis.com^$important
 ||browser.sentry-cdn.com^$important
@@ -147,7 +146,6 @@
 ||hx3m5vq.com^$important
 ||ce2b8dz.com^$important
 ||yimzoo36.com^$important
-||juejin.cn^$important
 ||chunyina.co^$important
 ||weiyaonuo.co^$important
 ||yopengtong.co^$important
@@ -765,7 +763,6 @@
 ||uril6.com^$important
 ||yuanbaobaoxian.com^$important
 ||adim.pinduoduo.com^$important
-||ahdohpiechei.com^$important
 ||cjjd14.com^$important
 ||lf-reward-video.bytedcdn.com^$important
 ||homeborn.cn^$important
@@ -831,14 +828,13 @@
 ||docs.c-ctrip.com^$important
 ||download*.ctrip.com^$important
 #针对美团/美团外卖广告拦截规则
-||dreport.meituan.net^$important
+||catfront.dianping.com^$important
 ||data-sdk-uuid-log.d.meituan.net^$important
 ||tec73.com^$important
 ||wmlog.meituan.com^$important
 ||volces.com^$important
 ||logan.sankuai.com^$important
 ||appsflyersdk.com^$important
-||catfront.dianping.com^$important
 ||alita.waimai.meituan.com^$important
 @@||mrn.meituan.net^$important
 @@||i.meituan.com^$important
@@ -878,6 +874,9 @@
 ||atrace.chelaile.net.cn^$important
 ||cdn.smartimg.chelaile.net.cn^$important
 #针对部分小众广告联盟的规则
+||adn.tapapis.cn^$important
+||yourongsj.com^$important
+||halomobi.com^$important
 ||uodoo.com^$important
 ||lianliyuntools.com^$important
 ||camerascanner.cn^$important
@@ -972,7 +971,6 @@
 ||ffilelogapp.huya.com^$important
 ||fileserverpcdn.cdn.huya.com^$important
 ||*-fileserverpcdn.cdn.huya^$important
-||gameresource.itop.qq.com^$important
 ||*-cdnfile*pcdn.msstatic.com^$important
 ||hydlpcdn.cdn.huya.com^$important
 #中国移动云盘的广告拦截规则
@@ -1001,9 +999,17 @@
 @@||shouji.sogou.com^$important
 #针对小蚕惠生活的拦截规则
 ||buryingapi.xiaocantech.com^$important
-#针对虎扑JRS的广告拦截规则
+#针对虎扑App的广告拦截规则
 ||goblin.hupu.com^$important
 ||e-goblin.hupu.com^$important
+||hermes.hupu.com^$important
+||gdc.hupucdn.com^$important
+||collect.hupu.com^$important
+||nur.hupu.com^$important
+||hss.hupu.com^$important
+||downloadmobile.hupu.com^$important
+||themis.hupu.com^$important
+||activity-static.hoopchina.com.cn^$important
 #针对魅族手机的广告拦截规则
 ||open-iflow.meizu.com^$important
 ||reader.meizu.com^$important
@@ -1012,7 +1018,6 @@
 ||api-flow.flyme.cn^$important
 #针对翼支付的广告拦截规则
 ||mdc.bestpay.com.cn^$important
-||mapi.bestpay.com.cn^$important
 #针对小米互联互通的放行规则
 @@||hpplay.cn^$important
 #针对哔咔漫画的广告拦截规则
@@ -1146,7 +1151,7 @@
 @@||tnc3-alisc1.snssdk.com^$important
 @@||content-open.douyin.com^$important
 #针对KiMiAPP的误杀放行规则
-@@||prod-chat-kimi.tos-cn-beijing.volces.com^$importat
+@@||prod-chat-kimi.tos-cn-beijing.volces.com^$important
 #针对度小满/有钱花的广告拦截规则
 ||plusjrmallstatic.cdn.bcebos.com^$important
 #针对UC/夸克网盘的误杀放行规则
@@ -1213,3 +1218,28 @@
 #针对彩虹多多App的广告拦截规则
 ||yunxish.com^$important
 ||adxvip.com^$important
+#针对闲鱼App的误杀放行规则
+@@||px.ucweb.com^$important
+#针对百词斩App的广告拦截规则
+||advertise.bczeducation.*^$important
+#针对努比亚游戏中心广告拦截规则
+||cdn*-ads.redmagic.com^$important
+#针对滴滴出行车主服务误杀放行规则
+@@||adtrack.xiaojukeji.com^$important
+#针对小米移动的误杀放行规则
+@@||apm-rum.inf.miui.com^$important
+@@||tracking.miui.com^$important
+#针对搜狗输入法的误杀放行规则
+@@input.shouji.sogou.com^$important
+#针对手心输入法的误杀放行规则
+@@shouji.360.cn^$important
+#针对淘宝联盟App的误杀放行规则
+@@||audid-api.taobao.com^$important
+#淘宝闪购e起赚小程序误杀放行规则
+@@||shopping.ele.me^$important
+#针对顺丰同城骑士的误杀放行规则
+@@||locprivate-tostc.sf-express.com^$important
+#中山市智慧排水平台误杀放行规则
+@@||zsusw.zs.gdgov.cn^$important
+#针对中国电信的误杀放行规则
+@@||mapi.bestpay.com.cn^$important
