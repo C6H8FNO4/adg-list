@@ -1,9 +1,9 @@
 !
 ! Title: Custom AdGuard DNS filter
-! Description: Generated automatically. Version: 0.0.3 Time: 2026-08-29T23:06:35Z
+! Description: Generated automatically. Version: 0.0.3 Time: 2026-08-30T04:34:44Z
 ! Version: 0.0.3
 ! Homepage: https://github.com/C6H8FNO4/adg-list
-! Last modified: 2026-08-29T23:06:35Z
+! Last modified: 2026-08-30T04:34:44Z
 !
 ! Compiled by @adg-list v0.0.3
 !
@@ -716,7 +716,7 @@
 #拦截HTTPDNS相关域名链接
 ||hdns.ksyun.com$important
 ||apidns.kwd.inkuai.com^$important
-||httpdns.*^$important
+||*httpdns.*^$important
 ||dns*.weixin.qq.*^$important
 ||dns.qq.com^$important
 ||*dns.weixin.qq.*^$important
@@ -730,6 +730,21 @@
 ||dot.api.idmzj.com^$important
 ||doh.iqiyi.com^$important
 ||paydns.wechatpay.cn^$important
+||doh.qq.com^$important
+||dot.qq.com^$important
+||dns.taobao.com^$important
+||dns.tmall.com^$important
+||dns.pinduoduo.com^$important
+||dns.bytedance.com^$important
+||dns.toutiao.com^$important
+||dns.kuaishou.com^$important
+||dns.360.cn^$important
+||dns.sina.com.cn^$important
+||dns.sohu.com^$important
+||dns.163.com^$important
+||dns.yy.com^$important
+||dig.zjurl.cn^$important
+||dns2.q2cdn.com^$important
 #针对网易云音乐的广告拦截规则
 ||nstool.netease.com^$important
 ||ssp-landing.taptap.cn^$important
@@ -1035,8 +1050,6 @@
 ||imageads.codoon.com^$important
 ||adsdkapi.dxys.pro^$important
 ||tobidad.*^$important
-#针对抖音App的放行规则
-@@||dig.bdurl.net^$important
 #针对斗鱼直播的广告拦截规则
 ||rtbapi.douyucdn.cn^$important
 #拦截小米智能服务系统级广告
@@ -1184,7 +1197,6 @@
 @@||xn--vhq3x51dn9bivas49nfps.com^$important
 #针对萤石云视频的广告拦截规则
 ||ad-material.*.com^$important
-||sdk-ab-config-cdn.yunxish.com^$important
 ||appdownload.ys7.com^$important
 #针对123网盘App跳转误杀放行规则
 @@||c.umsns.com^$important
@@ -1247,3 +1259,14 @@
 #针对三国志战略版的误杀放行规则
 @@||lingxigames.com^$important
 @@||aligames.com^$important
+#针对淘宝闪购商家零售版放行规则
+@@||nracc.ele.me^$important
+#针对决胜巅峰的误杀放行规则
+@@||ad.moonton.cn^$important
+@@||tapapis.cn^$important
+@@||log.dailygn.com^$important
+#阻断ECH公钥链接防止流量绕过
+||_https.*^$important
+||_svcb.*^$important
+#小米应用安装器的放行规则
+@@||api.installer.xiaomi.com^$important
